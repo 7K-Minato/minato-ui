@@ -129,7 +129,7 @@ docker run -p 3000:3000 minato-ui
 
 ```bash
 # Add Helm repository (if published)
-helm repo add minato-ui oci://harbor.7kgroup.com/minato-ui
+helm repo add minato-ui oci://harbor.7kgroup.org/7kminato
 
 # Install chart
 helm install minato-ui minato-ui/minato-ui \
