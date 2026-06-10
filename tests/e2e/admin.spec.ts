@@ -1,0 +1,50 @@
+import { test, expect } from "@playwright/test";
+
+test.describe("Control Planes", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/control-planes");
+  });
+
+  test("loads control planes page", async ({ page }) => {
+    await expect(page.getByRole("heading", { name: "Control Planes" })).toBeVisible();
+  });
+
+  test("has add control plane button", async ({ page }) => {
+    await expect(page.getByRole("button", { name: /add control plane/i })).toBeVisible();
+  });
+
+  test("form validation works", async ({ page }) => {
+    await page.getByRole("button", { name: /add control plane/i }).click();
+    
+    // Try to submit empty form
+    await page.getByRole("button", { name: /save/i }).click();
+    
+    // Should show validation errors or stay on form
+    await expect(page.getByLabel(/name/i)).toBeVisible();
+  });
+});
+
+test.describe("API Keys", () => {
+  test("loads api keys page", async ({ page }) => {
+    await page.goto("/apikeys");
+    await expect(page.getByRole("heading", { name: "API Keys" })).toBeVisible();
+  });
+
+  test("has create key button", async ({ page }) => {
+    await page.goto("/apikeys");
+    await expect(page.getByRole("button", { name: /create key/i })).toBeVisible();
+  });
+});
+
+test.describe("Audit Logs", () => {
+  test("loads audit logs page", async ({ page }) => {
+    await page.goto("/audit-logs");
+    await expect(page.getByRole("heading", { name: "Audit Logs" })).toBeVisible();
+  });
+
+  test("has filter inputs", async ({ page }) => {
+    await page.goto("/audit-logs");
+    await expect(page.getByPlaceholder(/filter by actor/i)).toBeVisible();
+    await expect(page.getByPlaceholder(/filter by action/i)).toBeVisible();
+  });
+});

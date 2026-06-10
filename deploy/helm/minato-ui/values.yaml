@@ -1,0 +1,105 @@
+# Default values for minato-ui.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 2
+
+image:
+  repository: harbor.7kgroup.com/minato/minato-ui
+  pullPolicy: IfNotPresent
+  tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# Database configuration using CNPG (CloudNativePG) operator
+cnpg:
+  enabled: true
+  instances: 3
+  storage:
+    size: 10Gi
+    storageClass: standard
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 500m
+
+# Application configuration
+app:
+  # NextAuth.js configuration
+  auth:
+    oidc:
+      enabled: false
+      issuer: ""
+      clientId: ""
+      clientSecret: ""
+    basic:
+      enabled: true
+  # Control plane configuration
+  controlPlane:
+    url: "http://minato-controlplane:8080"
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65532
+  fsGroup: 65532
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+  seccompProfile:
+    type: RuntimeDefault
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: minato-ui.7kgroup.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: minato-ui-tls
+      hosts:
+        - minato-ui.7kgroup.com
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

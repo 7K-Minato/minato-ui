@@ -1,0 +1,17 @@
+apiVersion: v2
+name: minato-ui
+description: Minato Control Plane UI - Multi-cluster game server management dashboard
+type: application
+version: 0.1.0
+appVersion: "0.1.0"
+keywords:
+  - minato
+  - gameserver
+  - control-plane
+  - dashboard
+home: https://7kgroup.com
+sources:
+  - https://github.com/7k-group/minato-ui
+maintainers:
+  - name: 7K Group
+    email: dev@7kgroup.com

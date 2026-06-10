@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "minato-ui.fullname" . }}-config
+  labels:
+    {{- include "minato-ui.labels" . | nindent 4 }}
+data:
+  NODE_ENV: "production"
+  PORT: "3000"
+  DATABASE_URL: "postgresql://minatoui:$(DB_PASSWORD)@{{ include "minato-ui.fullname" . }}-rw:5432/minatoui?schema=public"
+  {{- if .Values.app.auth.oidc.enabled }}
+  AUTH_OIDC_ISSUER: {{ .Values.app.auth.oidc.issuer | quote }}
+  AUTH_OIDC_CLIENT_ID: {{ .Values.app.auth.oidc.clientId | quote }}
+  {{- end }}
+  AUTH_BASIC_ENABLED: {{ .Values.app.auth.basic.enabled | quote }}
+  CONTROL_PLANE_URL: {{ .Values.app.controlPlane.url | quote }}
