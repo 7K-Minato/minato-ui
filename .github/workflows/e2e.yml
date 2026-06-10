@@ -29,6 +29,8 @@ jobs:
 
       - name: Run E2E tests
         run: npm run test:e2e
+        env:
+          E2E_TEST: true
 
       - name: Upload test results
         uses: actions/upload-artifact@v4

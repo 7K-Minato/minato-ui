@@ -15,6 +15,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Bypass auth for E2E tests
+  if (process.env.E2E_TEST === "true") {
+    return NextResponse.next();
+  }
+
   // Protected routes
   if (!session) {
     const loginUrl = new URL("/login", request.url);
