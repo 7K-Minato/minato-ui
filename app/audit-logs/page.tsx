@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Badge } from "7k-design-system/react";
+import { Badge, Button } from "7k-design-system/react";
 import { controlPlaneAPI } from "@/lib/control-plane-api";
+import Skeleton from "@/components/ui/Skeleton";
 
 interface AuditEvent {
   id: string;
@@ -22,6 +23,7 @@ export default function AuditLogsPage() {
   const [selectedCP, setSelectedCP] = useState<string>("");
   const [events, setEvents] = useState<AuditEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [filter, setFilter] = useState({
     actor: "",
     action: "",
@@ -50,6 +52,7 @@ export default function AuditLogsPage() {
   async function loadEvents() {
     try {
       setLoading(true);
+      setError("");
       const params = new URLSearchParams();
       if (filter.actor) params.append("actor", filter.actor);
       if (filter.action) params.append("action", filter.action);
@@ -63,9 +66,12 @@ export default function AuditLogsPage() {
       if (res.ok) {
         const data = await res.json();
         setEvents(data.events || []);
+      } else if (res.status === 404) {
+        setError("Audit endpoint not configured");
       }
     } catch (error) {
       console.error("Failed to load audit events:", error);
+      setError("Failed to load audit events");
     } finally {
       setLoading(false);
     }
@@ -83,11 +89,11 @@ export default function AuditLogsPage() {
     <div className="container mx-auto p-8">
       <header className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Audit Logs</h1>
-          <p className="mt-1 text-sm opacity-70">View and filter audit events across control planes</p>
+          <h1 className="text-4xl font-black tracking-tightest">AUDIT LOGS</h1>
+          <p className="mt-1 mono-label text-white/70">VIEW AND FILTER AUDIT EVENTS ACROSS CONTROL PLANES</p>
         </div>
         <select
-          className="rounded border border-white/10 bg-transparent px-3 py-2"
+          className="border-2 border-white bg-black px-3 py-2 mono-label"
           value={selectedCP}
           onChange={(e) => setSelectedCP(e.target.value)}
         >
@@ -99,77 +105,83 @@ export default function AuditLogsPage() {
         </select>
       </header>
 
-      <div className="mb-6 rounded-lg border border-white/10 p-4">
+      {error && (
+        <div className="glitch mb-6 border-2 border-white bg-black p-4">
+          <span className="text-white">{error}</span>
+        </div>
+      )}
+
+      <div className="mb-6 border-2 border-white p-4">
         <div className="grid gap-3 md:grid-cols-5">
           <input
             type="text"
-            placeholder="Filter by actor..."
-            className="rounded border border-white/10 bg-transparent px-3 py-2 text-sm"
+            placeholder="FILTER BY ACTOR..."
+            className="border-2 border-white bg-black px-3 py-2 mono-label"
             value={filter.actor}
             onChange={(e) => setFilter({ ...filter, actor: e.target.value })}
           />
           <input
             type="text"
-            placeholder="Filter by action..."
-            className="rounded border border-white/10 bg-transparent px-3 py-2 text-sm"
+            placeholder="FILTER BY ACTION..."
+            className="border-2 border-white bg-black px-3 py-2 mono-label"
             value={filter.action}
             onChange={(e) => setFilter({ ...filter, action: e.target.value })}
           />
           <input
             type="text"
-            placeholder="Filter by resource..."
-            className="rounded border border-white/10 bg-transparent px-3 py-2 text-sm"
+            placeholder="FILTER BY RESOURCE..."
+            className="border-2 border-white bg-black px-3 py-2 mono-label"
             value={filter.resource}
             onChange={(e) => setFilter({ ...filter, resource: e.target.value })}
           />
           <select
-            className="rounded border border-white/10 bg-transparent px-3 py-2 text-sm"
+            className="border-2 border-white bg-black px-3 py-2 mono-label"
             value={filter.success}
             onChange={(e) => setFilter({ ...filter, success: e.target.value })}
           >
-            <option value="">All Status</option>
-            <option value="true">Success</option>
-            <option value="false">Failed</option>
+            <option value="">ALL STATUS</option>
+            <option value="true">SUCCESS</option>
+            <option value="false">FAILED</option>
           </select>
-          <button
+          <Button
+            variant="secondary"
             onClick={loadEvents}
-            className="rounded border border-white/10 px-4 py-2 text-sm hover:bg-white/5"
           >
-            Refresh
-          </button>
+            REFRESH
+          </Button>
         </div>
       </div>
 
-      <div className="rounded-lg border border-white/10">
-        <table className="w-full">
-          <thead className="border-b border-white/10">
-            <tr className="text-left text-sm opacity-70">
-              <th className="px-4 py-3">Timestamp</th>
-              <th className="px-4 py-3">Level</th>
-              <th className="px-4 py-3">Actor</th>
-              <th className="px-4 py-3">Action</th>
-              <th className="px-4 py-3">Resource</th>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Status</th>
+      <div className="border-2 border-white">
+        <table className="table w-full">
+          <thead>
+            <tr>
+              <th className="px-4 py-3">TIMESTAMP</th>
+              <th className="px-4 py-3">LEVEL</th>
+              <th className="px-4 py-3">ACTOR</th>
+              <th className="px-4 py-3">ACTION</th>
+              <th className="px-4 py-3">RESOURCE</th>
+              <th className="px-4 py-3">NAME</th>
+              <th className="px-4 py-3">STATUS</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/10">
+          <tbody className="divide-y-2 divide-white">
             {loading && events.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center">
-                  Loading audit events...
+                <td colSpan={7} className="px-4 py-8">
+                  <Skeleton className="h-8" />
                 </td>
               </tr>
             ) : filteredEvents.length === 0 ? (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center opacity-70">
-                  No audit events found
+                <td colSpan={7} className="px-4 py-8 text-center mono-label text-white/50">
+                  {error ? "AUDIT ENDPOINT NOT CONFIGURED" : "NO AUDIT EVENTS FOUND"}
                 </td>
               </tr>
             ) : (
               filteredEvents.map((event) => (
                 <tr key={event.id} className="hover:bg-white/5">
-                  <td className="px-4 py-3 whitespace-nowrap text-sm">
+                  <td className="px-4 py-3 whitespace-nowrap mono-label">
                     {new Date(event.timestamp).toLocaleString()}
                   </td>
                   <td className="px-4 py-3">
@@ -179,19 +191,19 @@ export default function AuditLogsPage() {
                           ? "danger"
                           : event.level === "warn"
                           ? "warning"
-                          : "default"
+                          : "neutral"
                       }
                     >
-                      {event.level}
+                      {event.level.toUpperCase()}
                     </Badge>
                   </td>
-                  <td className="px-4 py-3 text-sm font-medium">{event.actor}</td>
-                  <td className="px-4 py-3 text-sm">{event.action}</td>
-                  <td className="px-4 py-3 text-sm opacity-70">{event.resource}</td>
-                  <td className="px-4 py-3 text-sm">{event.resourceName}</td>
+                  <td className="px-4 py-3 font-medium">{event.actor}</td>
+                  <td className="px-4 py-3 mono-label">{event.action}</td>
+                  <td className="px-4 py-3 mono-label text-white/70">{event.resource}</td>
+                  <td className="px-4 py-3">{event.resourceName}</td>
                   <td className="px-4 py-3">
                     <Badge variant={event.success ? "success" : "danger"}>
-                      {event.success ? "Success" : "Failed"}
+                      {event.success ? "SUCCESS" : "FAILED"}
                     </Badge>
                   </td>
                 </tr>

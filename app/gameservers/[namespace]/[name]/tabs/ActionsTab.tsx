@@ -79,35 +79,31 @@ export default function ActionsTab({
   return (
     <div className="max-w-2xl space-y-4">
       {actions.map((action) => (
-        <div
-          key={action.name}
-          className="rounded-lg border border-white/10 p-6"
-        >
+        <div key={action.name} className="border-2 border-white p-6 accent-border-top">
           <div>
             <p className="font-medium">{action.name}</p>
-            <p className="text-sm opacity-70">{action.description}</p>
+            <p className="mono-label text-white/70">{action.description}</p>
           </div>
 
           {action.params && Object.keys(action.params).length > 0 && (
             <div className="mt-4 space-y-3">
               {Object.entries(action.params).map(([key, config]) => (
                 <div key={key}>
-                  <label className="block text-sm opacity-70">
+                  <label className="mono-label">
                     {key}
                     {config.required && (
-                      <span className="text-red-400">*</span>
+                      <span className="text-status-danger">*</span>
                     )}
                   </label>
                   <Input
                     value={actionParams[`${action.name}.${key}`] || ""}
-                    onChange={(e) =>
+                    onChange={(value) =>
                       setActionParams({
                         ...actionParams,
-                        [`${action.name}.${key}`]: e.target.value,
+                        [`${action.name}.${key}`]: value,
                       })
                     }
                     placeholder={config.default || `Enter ${key}`}
-                    className="mt-1"
                   />
                 </div>
               ))}
@@ -115,14 +111,14 @@ export default function ActionsTab({
           )}
 
           <Button
-            variant="primary"
+            variant="glow"
             className="mt-4"
             onClick={() => handleExecuteAction(action.name)}
             disabled={executingAction === action.name}
           >
             {executingAction === action.name
-              ? "Executing..."
-              : "Execute Action"}
+              ? "EXECUTING..."
+              : "EXECUTE ACTION"}
           </Button>
         </div>
       ))}

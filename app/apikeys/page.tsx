@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { Button, Badge, Input } from "7k-design-system/react";
 import { controlPlaneAPI } from "@/lib/control-plane-api";
+import { useToastStore } from "@/components/ui/Toast";
+import Skeleton from "@/components/ui/Skeleton";
 
 interface APIKey {
   name: string;
@@ -26,6 +28,7 @@ export default function APIKeysPage() {
     name: "",
     role: "viewer",
   });
+  const { addToast } = useToastStore();
 
   useEffect(() => {
     loadControlPlanes();
@@ -80,12 +83,13 @@ export default function APIKeysPage() {
         setShowForm(false);
         setFormData({ name: "", role: "viewer" });
         loadAPIKeys();
+        addToast("API key created", "success");
       } else {
-        alert("Failed to create API key");
+        addToast("Failed to create API key", "error");
       }
     } catch (error) {
       console.error("Failed to create API key:", error);
-      alert("Failed to create API key");
+      addToast("Failed to create API key", "error");
     }
   }
 
@@ -100,12 +104,13 @@ export default function APIKeysPage() {
 
       if (res.ok) {
         loadAPIKeys();
+        addToast("API key revoked", "success");
       } else {
-        alert("Failed to revoke API key");
+        addToast("Failed to revoke API key", "error");
       }
     } catch (error) {
       console.error("Failed to revoke API key:", error);
-      alert("Failed to revoke API key");
+      addToast("Failed to revoke API key", "error");
     }
   }
 
@@ -113,12 +118,12 @@ export default function APIKeysPage() {
     <div className="container mx-auto p-8">
       <header className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">API Keys</h1>
-          <p className="mt-1 text-sm opacity-70">Manage API keys for service-to-service authentication</p>
+          <h1 className="text-4xl font-black tracking-tightest">API KEYS</h1>
+          <p className="mt-1 mono-label text-white/70">MANAGE API KEYS FOR SERVICE-TO-SERVICE AUTHENTICATION</p>
         </div>
         <div className="flex gap-4">
           <select
-            className="rounded border border-white/10 bg-transparent px-3 py-2"
+            className="border-2 border-white bg-black px-3 py-2 mono-label"
             value={selectedCP}
             onChange={(e) => setSelectedCP(e.target.value)}
           >
@@ -128,31 +133,34 @@ export default function APIKeysPage() {
               </option>
             ))}
           </select>
-          <Button variant="primary" onClick={() => setShowForm(!showForm)}>
-            {showForm ? "Cancel" : "+ Create Key"}
+          <Button variant="glow" onClick={() => setShowForm(!showForm)}>
+            {showForm ? "CANCEL" : "+ CREATE KEY"}
           </Button>
         </div>
       </header>
 
       {newKey?.keyValue && (
-        <div className="mb-6 rounded-lg border border-yellow-500/50 bg-yellow-500/10 p-6">
-          <h3 className="mb-2 font-semibold text-yellow-400">API Key Created</h3>
-          <p className="mb-4 text-sm">
-            Copy this key now. It will never be shown again.
+        <div className="mb-6 border-2 border-white bg-black p-6">
+          <h3 className="mb-2 mono-label text-status-warning">API KEY CREATED</h3>
+          <p className="mb-4 mono-label text-white/70">
+            COPY THIS KEY NOW. IT WILL NEVER BE SHOWN AGAIN.
           </p>
           <div className="flex gap-2">
-            <code className="flex-1 rounded bg-black/50 px-4 py-2 text-sm break-all">
+            <code className="kbd flex-1 break-all px-4 py-2">
               {newKey.keyValue}
             </code>
             <Button
               variant="secondary"
-              onClick={() => navigator.clipboard.writeText(newKey.keyValue || "")}
+              onClick={() => {
+                navigator.clipboard.writeText(newKey.keyValue || "");
+                addToast("Copied to clipboard", "success");
+              }}
             >
-              Copy
+              COPY
             </Button>
           </div>
           <Button variant="ghost" className="mt-4" onClick={() => setNewKey(null)}>
-            Dismiss
+            DISMISS
           </Button>
         </div>
       )}
@@ -160,60 +168,60 @@ export default function APIKeysPage() {
       {showForm && (
         <form
           onSubmit={handleCreate}
-          className="mb-8 rounded-lg border border-white/10 p-6"
+          className="mb-8 border-2 border-white p-6"
         >
-          <h3 className="mb-4 text-lg font-semibold">Create API Key</h3>
+          <h3 className="mb-4 mono-label">CREATE API KEY</h3>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="block text-sm font-medium mb-1">Name</label>
+              <label className="mono-label block mb-1">NAME</label>
               <Input
                 value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                onChange={(value) => setFormData({ ...formData, name: value })}
                 placeholder="ci-cd-pipeline"
                 required
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Role</label>
+              <label className="mono-label block mb-1">ROLE</label>
               <select
-                className="w-full rounded border border-white/10 bg-transparent px-3 py-2"
+                className="w-full border-2 border-white bg-black px-3 py-2 mono-label"
                 value={formData.role}
                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
               >
-                <option value="viewer">Viewer</option>
-                <option value="operator">Operator</option>
-                <option value="admin">Admin</option>
+                <option value="viewer">VIEWER</option>
+                <option value="operator">OPERATOR</option>
+                <option value="admin">ADMIN</option>
               </select>
             </div>
           </div>
-          <Button type="submit" variant="primary" className="mt-4">
-            Create API Key
+          <Button type="submit" variant="glow" className="mt-4">
+            CREATE API KEY
           </Button>
         </form>
       )}
 
-      <div className="rounded-lg border border-white/10">
-        <table className="w-full">
-          <thead className="border-b border-white/10">
-            <tr className="text-left text-sm opacity-70">
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Role</th>
-              <th className="px-4 py-3">Created</th>
-              <th className="px-4 py-3">Created By</th>
-              <th className="px-4 py-3">Actions</th>
+      <div className="border-2 border-white">
+        <table className="table w-full">
+          <thead>
+            <tr>
+              <th className="px-4 py-3">NAME</th>
+              <th className="px-4 py-3">ROLE</th>
+              <th className="px-4 py-3">CREATED</th>
+              <th className="px-4 py-3">CREATED BY</th>
+              <th className="px-4 py-3">ACTIONS</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/10">
+          <tbody className="divide-y-2 divide-white">
             {loading && apiKeys.length === 0 ? (
               <tr>
                 <td colSpan={5} className="px-4 py-8 text-center">
-                  Loading API keys...
+                  <Skeleton className="h-8" />
                 </td>
               </tr>
             ) : apiKeys.length === 0 ? (
               <tr>
-                <td colSpan={5} className="px-4 py-8 text-center opacity-70">
-                  No API keys found
+                <td colSpan={5} className="px-4 py-8 text-center mono-label text-white/50">
+                  NO API KEYS FOUND
                 </td>
               </tr>
             ) : (
@@ -227,16 +235,16 @@ export default function APIKeysPage() {
                           ? "danger"
                           : key.role === "operator"
                           ? "warning"
-                          : "default"
+                          : "neutral"
                       }
                     >
-                      {key.role}
+                      {key.role.toUpperCase()}
                     </Badge>
                   </td>
-                  <td className="px-4 py-3 text-sm opacity-70">
+                  <td className="px-4 py-3 mono-label text-white/70">
                     {key.createdAt ? new Date(key.createdAt).toLocaleDateString() : "-"}
                   </td>
-                  <td className="px-4 py-3 text-sm opacity-70">
+                  <td className="px-4 py-3 mono-label text-white/70">
                     {key.createdBy || "-"}
                   </td>
                   <td className="px-4 py-3">
@@ -245,7 +253,7 @@ export default function APIKeysPage() {
                       size="sm"
                       onClick={() => handleDelete(key.name)}
                     >
-                      Revoke
+                      REVOKE
                     </Button>
                   </td>
                 </tr>

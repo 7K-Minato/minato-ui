@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Badge } from "7k-design-system/react";
 import { controlPlaneAPI } from "@/lib/control-plane-api";
+import Skeleton from "@/components/ui/Skeleton";
 
 interface GameProfile {
   apiVersion: string;
@@ -97,37 +98,37 @@ export default function ProfilesPage() {
       <div className="container mx-auto p-8">
         <button
           onClick={() => setSelectedProfile(null)}
-          className="mb-4 text-sm opacity-70 hover:opacity-100"
+          className="mb-4 mono-label text-white/70 hover:text-white"
         >
-          ← Back to profiles
+          ← BACK TO PROFILES
         </button>
 
         <header className="mb-8">
-          <h1 className="text-3xl font-bold">
+          <h1 className="text-4xl font-black tracking-tightest">
             {selectedProfile.spec.displayName || selectedProfile.metadata.name}
           </h1>
-          <p className="mt-1 text-sm opacity-70">{selectedProfile.metadata.name}</p>
+          <p className="mt-1 mono-label text-white/70">{selectedProfile.metadata.name}</p>
         </header>
 
         <div className="grid gap-8 lg:grid-cols-2">
           <div className="space-y-6">
-            <div className="rounded-lg border border-white/10 p-6">
-              <h2 className="mb-4 text-lg font-semibold">Image</h2>
-              <code className="rounded bg-white/5 px-3 py-2 text-sm">
+            <div className="border-2 border-white p-6 accent-border-top">
+              <h2 className="mb-4 mono-label">IMAGE</h2>
+              <code className="code-block">
                 {selectedProfile.spec.image}
               </code>
             </div>
 
-            <div className="rounded-lg border border-white/10 p-6">
-              <h2 className="mb-4 text-lg font-semibold">Ports</h2>
+            <div className="border-2 border-white p-6 cyan-border-top">
+              <h2 className="mb-4 mono-label">PORTS</h2>
               <div className="space-y-2">
                 {selectedProfile.spec.ports.map((port) => (
                   <div
                     key={port.name}
-                    className="flex items-center justify-between rounded bg-white/5 px-4 py-2"
+                    className="flex items-center justify-between border border-white/20 px-4 py-2"
                   >
                     <span>{port.name}</span>
-                    <span className="text-sm opacity-70">
+                    <span className="mono-label text-white/70">
                       {port.containerPort}/{port.protocol || "TCP"}
                     </span>
                   </div>
@@ -136,78 +137,78 @@ export default function ProfilesPage() {
             </div>
 
             {selectedProfile.spec.resources && (
-              <div className="rounded-lg border border-white/10 p-6">
-                <h2 className="mb-4 text-lg font-semibold">Resources</h2>
+              <div className="border-2 border-white p-6 grid-border-top">
+                <h2 className="mb-4 mono-label">RESOURCES</h2>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm opacity-70">Requests</p>
+                    <p className="mono-label text-white/70">REQUESTS</p>
                     <p>CPU: {selectedProfile.spec.resources.requests?.cpu || "-"}</p>
-                    <p>Memory: {selectedProfile.spec.resources.requests?.memory || "-"}</p>
+                    <p>MEMORY: {selectedProfile.spec.resources.requests?.memory || "-"}</p>
                   </div>
                   <div>
-                    <p className="text-sm opacity-70">Limits</p>
+                    <p className="mono-label text-white/70">LIMITS</p>
                     <p>CPU: {selectedProfile.spec.resources.limits?.cpu || "-"}</p>
-                    <p>Memory: {selectedProfile.spec.resources.limits?.memory || "-"}</p>
+                    <p>MEMORY: {selectedProfile.spec.resources.limits?.memory || "-"}</p>
                   </div>
                 </div>
               </div>
             )}
 
             {selectedProfile.spec.storage && (
-              <div className="rounded-lg border border-white/10 p-6">
-                <h2 className="mb-4 text-lg font-semibold">Storage</h2>
-                <p>Mount Path: {selectedProfile.spec.storage.mountPath}</p>
-                <p>Default Size: {selectedProfile.spec.storage.sizeDefault || "-"}</p>
+              <div className="border-2 border-white p-6 line-border-top">
+                <h2 className="mb-4 mono-label">STORAGE</h2>
+                <p>MOUNT PATH: {selectedProfile.spec.storage.mountPath}</p>
+                <p>DEFAULT SIZE: {selectedProfile.spec.storage.sizeDefault || "-"}</p>
               </div>
             )}
           </div>
 
           <div className="space-y-6">
-            <div className="rounded-lg border border-white/10 p-6">
-              <h2 className="mb-4 text-lg font-semibold">Agent</h2>
-              <code className="rounded bg-white/5 px-3 py-2 text-sm">
+            <div className="border-2 border-white p-6 accent-border-top">
+              <h2 className="mb-4 mono-label">AGENT</h2>
+              <code className="code-block">
                 {selectedProfile.spec.agent?.image}
               </code>
               {selectedProfile.spec.agent?.version && (
-                <p className="mt-2 text-sm opacity-70">
-                  Version: {selectedProfile.spec.agent.version}
+                <p className="mt-2 mono-label text-white/70">
+                  VERSION: {selectedProfile.spec.agent.version}
                 </p>
               )}
             </div>
 
-            <div className="rounded-lg border border-white/10 p-6">
-              <h2 className="mb-4 text-lg font-semibold">Actions</h2>
+            <div className="border-2 border-white p-6 cyan-border-top">
+              <h2 className="mb-4 mono-label">ACTIONS</h2>
               <div className="space-y-2">
                 {selectedProfile.spec.actions?.map((action) => (
                   <div
                     key={action.name}
-                    className="rounded bg-white/5 px-4 py-2"
+                    className="border border-white/20 px-4 py-2"
                   >
                     <p className="font-medium">{action.name}</p>
-                    <p className="text-sm opacity-70">{action.description}</p>
-                    <div className="mt-1 flex gap-2 text-xs opacity-50">
+                    <p className="mono-label text-white/70">{action.description}</p>
+                    <div className="mt-1 flex gap-2 mono-label text-white/50">
                       <span>{action.concurrency}</span>
                       {action.timeout && <span>• {action.timeout}</span>}
                     </div>
                   </div>
-                )) || <p className="opacity-70">No actions defined</p>}
+                )) || <p className="mono-label text-white/50">NO ACTIONS DEFINED</p>}
               </div>
             </div>
 
-            <div className="rounded-lg border border-white/10 p-6">
-              <h2 className="mb-4 text-lg font-semibold">Capabilities</h2>
+            <div className="border-2 border-white p-6 grid-border-top">
+              <h2 className="mb-4 mono-label">CAPABILITIES</h2>
               <div className="flex flex-wrap gap-2">
                 {selectedProfile.spec.capabilities?.files && (
-                  <Badge variant="success">Files</Badge>
+                  <Badge variant="success">FILES</Badge>
                 )}
                 {selectedProfile.spec.capabilities?.sftp && (
                   <Badge variant="success">SFTP</Badge>
                 )}
                 {selectedProfile.spec.capabilities?.backup && (
-                  <Badge variant="success">Backup</Badge>
+                  <Badge variant="success">BACKUP</Badge>
                 )}
                 {selectedProfile.spec.capabilities?.restoreFromSnapshot && (
-                  <Badge variant="success">Restore</Badge>
+                  <Badge variant="success">RESTORE</Badge>
                 )}
               </div>
             </div>
@@ -221,11 +222,11 @@ export default function ProfilesPage() {
     <div className="container mx-auto p-8">
       <header className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Game Profiles</h1>
-          <p className="mt-1 text-sm opacity-70">Browse available game profiles</p>
+          <h1 className="text-4xl font-black tracking-tightest">GAME PROFILES</h1>
+          <p className="mt-1 mono-label text-white/70">BROWSE AVAILABLE GAME PROFILES</p>
         </div>
         <select
-          className="rounded border border-white/10 bg-transparent px-3 py-2"
+          className="border-2 border-white bg-black px-3 py-2 mono-label"
           value={selectedCP}
           onChange={(e) => setSelectedCP(e.target.value)}
         >
@@ -236,10 +237,14 @@ export default function ProfilesPage() {
       </header>
 
       {loading ? (
-        <p>Loading profiles...</p>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-32" />
+        </div>
       ) : profiles.length === 0 ? (
-        <div className="rounded-lg border border-white/10 p-8 text-center">
-          <p className="opacity-70">No profiles found</p>
+        <div className="empty border-2 border-dashed border-white/50 p-8 text-center">
+          <p className="mono-label text-white/50">NO PROFILES FOUND</p>
         </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -247,21 +252,21 @@ export default function ProfilesPage() {
             <button
               key={profile.metadata.name}
               onClick={() => setSelectedProfile(profile)}
-              className="rounded-lg border border-white/10 p-6 text-left transition-colors hover:bg-white/5"
+              className="border-2 border-white p-6 text-left transition-colors hover:bg-white hover:text-black"
             >
               <h3 className="text-lg font-semibold">
                 {profile.spec.displayName || profile.metadata.name}
               </h3>
-              <p className="mt-1 text-sm opacity-70">{profile.metadata.name}</p>
+              <p className="mt-1 mono-label text-white/70">{profile.metadata.name}</p>
 
               <div className="mt-4 flex flex-wrap gap-2">
-                <Badge variant="default">{profile.spec.ports.length} ports</Badge>
-                <Badge variant="default">
-                  {profile.spec.actions?.length || 0} actions
+                <Badge variant="neutral">{profile.spec.ports.length} PORTS</Badge>
+                <Badge variant="neutral">
+                  {profile.spec.actions?.length || 0} ACTIONS
                 </Badge>
               </div>
 
-              <div className="mt-4 text-xs opacity-50">
+              <div className="mt-4 mono-label text-white/50">
                 <p className="truncate">{profile.spec.image}</p>
               </div>
             </button>

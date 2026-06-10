@@ -1,7 +1,9 @@
+"use client";
+
 export default function Skeleton({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`animate-pulse rounded bg-white/10 ${className}`}
+      className={`skeleton ${className}`}
       role="status"
       aria-label="Loading..."
     />
@@ -10,7 +12,7 @@ export default function Skeleton({ className = "" }: { className?: string }) {
 
 export function SkeletonCard() {
   return (
-    <div className="rounded-lg border border-white/10 p-6">
+    <div className="border-2 border-white p-6">
       <Skeleton className="mb-2 h-4 w-24" />
       <Skeleton className="h-8 w-16" />
     </div>
@@ -19,8 +21,8 @@ export function SkeletonCard() {
 
 export function SkeletonTable({ rows = 5 }: { rows?: number }) {
   return (
-    <div className="rounded-lg border border-white/10">
-      <div className="border-b border-white/10 p-4">
+    <div className="border-2 border-white">
+      <div className="border-b-2 border-white p-4">
         <div className="flex gap-4">
           <Skeleton className="h-8 flex-1" />
           <Skeleton className="h-8 flex-1" />
@@ -28,7 +30,7 @@ export function SkeletonTable({ rows = 5 }: { rows?: number }) {
           <Skeleton className="h-8 flex-1" />
         </div>
       </div>
-      <div className="divide-y divide-white/10">
+      <div className="divide-y-2 divide-white">
         {Array.from({ length: rows }).map((_, i) => (
           <div key={i} className="flex gap-4 p-4">
             <Skeleton className="h-6 w-20" />

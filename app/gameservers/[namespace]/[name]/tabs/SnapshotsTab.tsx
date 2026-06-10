@@ -20,32 +20,32 @@ export default function SnapshotsTab({
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Snapshots</h2>
+        <h2 className="mono-label">SNAPSHOTS</h2>
         <Button
-          variant="primary"
+          variant="glow"
           onClick={onCreate}
           disabled={creating}
         >
-          {creating ? "Creating..." : "+ Create Snapshot"}
+          {creating ? "CREATING..." : "+ CREATE SNAPSHOT"}
         </Button>
       </div>
 
       {snapshots.length === 0 ? (
-        <div className="rounded-lg border border-white/10 p-8 text-center">
-          <p className="opacity-70">No snapshots found</p>
+        <div className="empty border-2 border-dashed border-white/50 p-8 text-center">
+          <p className="mono-label text-white/50">NO SNAPSHOTS FOUND</p>
         </div>
       ) : (
         <div className="space-y-4">
           {snapshots.map((snapshot) => (
             <div
               key={snapshot.metadata.name}
-              className="flex items-center justify-between rounded-lg border border-white/10 p-4"
+              className="flex items-center justify-between border-2 border-white p-4 accent-border-top"
             >
               <div>
                 <p className="font-medium">{snapshot.metadata.name}</p>
-                <div className="mt-1 flex gap-4 text-sm opacity-70">
+                <div className="mt-1 flex gap-4 mono-label text-white/70">
                   <span>
-                    Created:{" "}
+                    CREATED:{" "}
                     {snapshot.metadata.creationTimestamp
                       ? new Date(
                           snapshot.metadata.creationTimestamp
@@ -53,7 +53,7 @@ export default function SnapshotsTab({
                       : "-"}
                   </span>
                   {snapshot.status?.size && (
-                    <span>Size: {snapshot.status.size}</span>
+                    <span>SIZE: {snapshot.status.size}</span>
                   )}
                 </div>
               </div>
@@ -66,7 +66,7 @@ export default function SnapshotsTab({
                     : "warning"
                 }
               >
-                {snapshot.status?.state || "Pending"}
+                {snapshot.status?.state || "PENDING"}
               </Badge>
             </div>
           ))}

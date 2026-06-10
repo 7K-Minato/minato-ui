@@ -28,8 +28,8 @@ export default function GameServerDetailPage({
       metadata: { name: string; creationTimestamp?: string };
       spec: { gameServerRef: string; schedule?: string };
       status?: { state: string; readyAt?: string; size?: string };
-    }
-  >>([]);
+    }>
+  >([]);
   const [creatingSnapshot, setCreatingSnapshot] = useState(false);
   const [players, setPlayers] = useState<
     Array<{
@@ -38,8 +38,8 @@ export default function GameServerDetailPage({
       status: string;
       connectedAt: string;
       ping?: number;
-    }
-  >>([]);
+    }>
+  >([]);
   const [consoleLogs, setConsoleLogs] = useState<string[]>([]);
   const [consoleLoading, setConsoleLoading] = useState(false);
   const { addToast } = useToastStore();
@@ -63,7 +63,6 @@ export default function GameServerDetailPage({
     });
   }, [params]);
 
-  // Load tab data when tab changes
   useEffect(() => {
     if (!namespace || !name || !controlPlaneId) return;
 
@@ -161,33 +160,43 @@ export default function GameServerDetailPage({
   if (serverError || !server) {
     return (
       <div className="container mx-auto p-8">
-        <p className="text-red-400">Failed to load game server</p>
+        <div className="glitch border-2 border-white bg-black p-4">
+          <span className="text-white">Failed to load game server</span>
+        </div>
         <Link href="/gameservers">
-          <Button variant="primary" className="mt-4">
-            Back to Game Servers
+          <Button variant="glow" className="mt-4">
+            BACK TO GAME SERVERS
           </Button>
         </Link>
       </div>
     );
   }
 
+  const tabs = [
+    { id: "overview", label: "OVERVIEW" },
+    { id: "actions", label: "ACTIONS" },
+    { id: "snapshots", label: "SNAPSHOTS" },
+    { id: "players", label: "PLAYERS" },
+    { id: "console", label: "CONSOLE" },
+  ];
+
   return (
     <div className="container mx-auto p-8">
       {/* Breadcrumb */}
-      <nav className="mb-4 text-sm opacity-70">
-        <Link href="/gameservers" className="hover:underline">
-          Game Servers
+      <nav className="breadcrumb mb-4">
+        <Link href="/gameservers" className="breadcrumb-item hover:underline">
+          GAME SERVERS
         </Link>
         <span className="mx-2">/</span>
-        <span>{server.metadata.namespace}</span>
+        <span className="breadcrumb-item">{server.metadata.namespace}</span>
         <span className="mx-2">/</span>
-        <span>{server.metadata.name}</span>
+        <span className="breadcrumb-item">{server.metadata.name}</span>
       </nav>
 
       {/* Header */}
       <header className="mb-8">
         <div className="flex items-center gap-3">
-          <h1 className="text-3xl font-bold">{server.metadata.name}</h1>
+          <h1 className="text-4xl font-black tracking-tightest">{server.metadata.name}</h1>
           <Badge
             variant={
               server.status?.state === "Running"
@@ -197,33 +206,25 @@ export default function GameServerDetailPage({
                 : "warning"
             }
           >
-            {server.status?.state || "Unknown"}
+            {(server.status?.state || "UNKNOWN").toUpperCase()}
           </Badge>
         </div>
-        <p className="mt-1 text-sm opacity-70">
+        <p className="mt-1 mono-label text-white/70">
           {server.spec.profile} • {server.metadata.namespace}
         </p>
       </header>
 
       {/* Tabs */}
-      <div className="mb-6 border-b border-white/10">
-        <div className="flex gap-6">
-          {["overview", "actions", "snapshots", "players", "console"].map(
-            (tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`pb-3 text-sm font-medium capitalize transition-colors ${
-                  activeTab === tab
-                    ? "border-b-2 border-white text-white"
-                    : "text-white/50 hover:text-white/70"
-                }`}
-              >
-                {tab}
-              </button>
-            )
-          )}
-        </div>
+      <div className="tabs mb-6">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`tab ${activeTab === tab.id ? "tab-accent" : ""}`}
+          >
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {/* Tab Content */}

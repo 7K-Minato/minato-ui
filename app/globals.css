@@ -2,8 +2,8 @@
 @import "7k-design-system/css";
 
 :root {
-  --background: #0a0a0d;
-  --foreground: #ededed;
+  --background: var(--bg-void);
+  --foreground: var(--text-primary);
 }
 
 @theme inline {
@@ -16,4 +16,64 @@
 body {
   background: var(--background);
   color: var(--foreground);
+}
+
+/* 1-bit base overrides */
+* {
+  border-radius: 0 !important;
+}
+
+/* Allow design system components to have their intended styles */
+.btn-modern-primary,
+.btn-modern-secondary,
+.btn-modern-ghost,
+.btn-modern-glow,
+.btn-modern-glow-cyan,
+.btn-modern-glow-grid,
+.btn-modern-danger,
+.input,
+.textarea,
+.select-native,
+.checkbox,
+.radio,
+.toggle,
+.badge,
+.nav-item,
+.nav-item-accent,
+.tab,
+.tab-accent,
+.toast,
+.modal,
+.drawer,
+.tooltip,
+.alert,
+.progress,
+.spinner,
+.skeleton,
+.empty,
+.loading-screen,
+.status-dot,
+.page-btn,
+.kbd,
+.chip,
+.chip-accent,
+.tag,
+.tag-outlined,
+.tag-inverted,
+.avatar,
+.stat,
+.stat-accent,
+.code-block,
+.code-inline,
+.link,
+.link-accent,
+.step,
+.step-line,
+.breadcrumb-item,
+.menu-item,
+.toolbar,
+.image-frame,
+.video-frame,
+.icon-box {
+  border-radius: 0 !important;
 }

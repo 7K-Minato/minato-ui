@@ -11,15 +11,15 @@ import { GameServer } from "@/lib/gameserver-api";
 import { SkeletonTable } from "@/components/ui/Skeleton";
 
 function StatusBadge({ state }: { state: string }) {
-  const variants: Record<string, "success" | "warning" | "danger" | "info" | "default"> = {
+  const variants: Record<string, "success" | "warning" | "danger" | "info" | "default" | "neutral"> = {
     Running: "success",
     Provisioning: "info",
     Idle: "warning",
-    Stopped: "default",
+    Stopped: "neutral",
     Error: "danger",
   };
 
-  return <Badge variant={variants[state] || "default"}>{state}</Badge>;
+  return <Badge variant={variants[state] || "default"}>{state.toUpperCase()}</Badge>;
 }
 
 export default function GameServersPage() {
@@ -48,7 +48,6 @@ export default function GameServersPage() {
   const [page, setPage] = useState(1);
   const pageSize = 20;
 
-  // Auto-select first CP if none selected
   if (!selectedControlPlaneId && controlPlanes && controlPlanes.length > 0) {
     setSelectedControlPlaneId(controlPlanes[0].id);
   }
@@ -88,7 +87,6 @@ export default function GameServersPage() {
       return true;
     });
 
-  // Sort
   const sortedServers = [...filteredServers].sort((a, b) => {
     if (!sortConfig) return 0;
     let aVal: string | number = "";
@@ -130,7 +128,6 @@ export default function GameServersPage() {
     return 0;
   });
 
-  // Pagination
   const totalPages = Math.ceil(sortedServers.length / pageSize);
   const paginatedServers = sortedServers.slice((page - 1) * pageSize, page * pageSize);
 
@@ -220,16 +217,16 @@ export default function GameServersPage() {
     <div className="container mx-auto p-8">
       <header className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Game Servers</h1>
-          <p className="mt-1 text-sm opacity-70">Manage your game servers across clusters</p>
+          <h1 className="text-4xl font-black tracking-tightest">GAME SERVERS</h1>
+          <p className="mt-1 mono-label text-white/70">MANAGE YOUR GAME SERVERS ACROSS CLUSTERS</p>
         </div>
         <div className="flex gap-4">
           <select
-            className="rounded border border-white/10 bg-transparent px-3 py-2"
+            className="border-2 border-white bg-black px-3 py-2 mono-label"
             value={selectedControlPlaneId || ""}
             onChange={(e) => setSelectedControlPlaneId(e.target.value || null)}
           >
-            <option value="">Select Control Plane</option>
+            <option value="">SELECT CONTROL PLANE</option>
             {controlPlanes?.map((cp) => (
               <option key={cp.id} value={cp.id}>
                 {cp.name}
@@ -237,7 +234,7 @@ export default function GameServersPage() {
             ))}
           </select>
           <Link href="/gameservers/create">
-            <Button variant="primary">+ Create Server</Button>
+            <Button variant="glow">+ CREATE SERVER</Button>
           </Link>
         </div>
       </header>
@@ -246,48 +243,48 @@ export default function GameServersPage() {
       <div className="mb-6 space-y-4">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <Input
-            placeholder="Search..."
+            placeholder="SEARCH..."
             value={filters.search || ""}
-            onChange={(e) => {
-              setFilters({ ...filters, search: e.target.value });
+            onChange={(value) => {
+              setFilters({ ...filters, search: value });
               setPage(1);
             }}
           />
           <select
-            className="rounded border border-white/10 bg-transparent px-3 py-2"
+            className="border-2 border-white bg-black px-3 py-2 mono-label"
             value={filters.namespace || ""}
             onChange={(e) => {
               setFilters({ ...filters, namespace: e.target.value || undefined });
               setPage(1);
             }}
           >
-            <option value="">All Namespaces</option>
+            <option value="">ALL NAMESPACES</option>
             {namespaces.map((ns) => (
               <option key={ns} value={ns}>{ns}</option>
             ))}
           </select>
           <select
-            className="rounded border border-white/10 bg-transparent px-3 py-2"
+            className="border-2 border-white bg-black px-3 py-2 mono-label"
             value={filters.profile || ""}
             onChange={(e) => {
               setFilters({ ...filters, profile: e.target.value || undefined });
               setPage(1);
             }}
           >
-            <option value="">All Profiles</option>
+            <option value="">ALL PROFILES</option>
             {profiles.map((p) => (
               <option key={p} value={p}>{p}</option>
             ))}
           </select>
           <select
-            className="rounded border border-white/10 bg-transparent px-3 py-2"
+            className="border-2 border-white bg-black px-3 py-2 mono-label"
             value={filters.status || ""}
             onChange={(e) => {
               setFilters({ ...filters, status: e.target.value || undefined });
               setPage(1);
             }}
           >
-            <option value="">All Statuses</option>
+            <option value="">ALL STATUSES</option>
             {statuses.map((s) => (
               <option key={s} value={s}>{s}</option>
             ))}
@@ -297,13 +294,13 @@ export default function GameServersPage() {
         <div className="flex items-center justify-between">
           <button
             onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-            className="text-sm text-white/50 hover:text-white"
+            className="mono-label text-white/50 hover:text-white"
           >
-            {showAdvancedFilters ? "Hide" : "Show"} Advanced Filters
+            {showAdvancedFilters ? "HIDE" : "SHOW"} ADVANCED FILTERS
           </button>
           <div className="flex items-center gap-4">
-            <span className="text-sm opacity-70">
-              {filteredServers.length} of {servers?.length || 0} servers
+            <span className="mono-label text-white/70">
+              {filteredServers.length} OF {servers?.length || 0} SERVERS
             </span>
             <Button
               variant="ghost"
@@ -314,50 +311,46 @@ export default function GameServersPage() {
                 setPage(1);
               }}
             >
-              Clear All
+              CLEAR ALL
             </Button>
           </div>
         </div>
 
         {showAdvancedFilters && (
-          <div className="grid grid-cols-1 gap-4 rounded-lg border border-white/10 p-4 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 border-2 border-white p-4 md:grid-cols-3">
             <div>
-              <label className="mb-1 block text-sm opacity-70">Min Players</label>
+              <label className="mono-label mb-1 block">MIN PLAYERS</label>
               <Input
                 type="number"
                 placeholder="0"
                 value={filters.minPlayers?.toString() ?? ""}
-                onChange={(e) =>
+                onChange={(value) =>
                   setFilters({
                     ...filters,
-                    minPlayers: e.target.value
-                      ? parseInt(e.target.value)
-                      : undefined,
+                    minPlayers: value ? parseInt(value) : undefined,
                   })
                 }
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm opacity-70">Max Players</label>
+              <label className="mono-label mb-1 block">MAX PLAYERS</label>
               <Input
                 type="number"
                 placeholder="∞"
                 value={filters.maxPlayers?.toString() ?? ""}
-                onChange={(e) =>
+                onChange={(value) =>
                   setFilters({
                     ...filters,
-                    maxPlayers: e.target.value
-                      ? parseInt(e.target.value)
-                      : undefined,
+                    maxPlayers: value ? parseInt(value) : undefined,
                   })
                 }
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm opacity-70">Sort By</label>
+              <label className="mono-label mb-1 block">SORT BY</label>
               <div className="flex gap-2">
                 <select
-                  className="flex-1 rounded border border-white/10 bg-transparent px-3 py-2"
+                  className="flex-1 border-2 border-white bg-black px-3 py-2 mono-label"
                   value={sortConfig?.key || ""}
                   onChange={(e) =>
                     setSortConfig(
@@ -370,13 +363,13 @@ export default function GameServersPage() {
                     )
                   }
                 >
-                  <option value="">None</option>
-                  <option value="name">Name</option>
-                  <option value="namespace">Namespace</option>
-                  <option value="profile">Profile</option>
-                  <option value="status">Status</option>
-                  <option value="players">Players</option>
-                  <option value="created">Created</option>
+                  <option value="">NONE</option>
+                  <option value="name">NAME</option>
+                  <option value="namespace">NAMESPACE</option>
+                  <option value="profile">PROFILE</option>
+                  <option value="status">STATUS</option>
+                  <option value="players">PLAYERS</option>
+                  <option value="created">CREATED</option>
                 </select>
                 {sortConfig && (
                   <button
@@ -387,7 +380,7 @@ export default function GameServersPage() {
                           sortConfig.direction === "asc" ? "desc" : "asc",
                       })
                     }
-                    className="rounded border border-white/10 px-3 py-2 text-sm hover:bg-white/5"
+                    className="border-2 border-white px-3 py-2 text-sm hover:bg-white hover:text-black transition-colors"
                   >
                     {sortConfig.direction === "asc" ? "↑" : "↓"}
                   </button>
@@ -400,9 +393,9 @@ export default function GameServersPage() {
 
       {/* Bulk Actions */}
       {selectedServers.size > 0 && (
-        <div className="mb-4 flex items-center justify-between rounded-lg border border-white/10 bg-white/5 p-4">
-          <span className="text-sm font-medium">
-            {selectedServers.size} server{selectedServers.size > 1 ? "s" : ""} selected
+        <div className="mb-4 flex items-center justify-between border-2 border-white bg-black p-4">
+          <span className="mono-label">
+            {selectedServers.size} SERVER{selectedServers.size > 1 ? "S" : ""} SELECTED
           </span>
           <Button
             variant="danger"
@@ -410,16 +403,16 @@ export default function GameServersPage() {
             onClick={handleBulkDelete}
             disabled={deleteMutation.isPending}
           >
-            {deleteMutation.isPending ? "Deleting..." : "Delete Selected"}
+            {deleteMutation.isPending ? "DELETING..." : "DELETE SELECTED"}
           </Button>
         </div>
       )}
 
       {/* Table */}
-      <div className="rounded-lg border border-white/10">
-        <table className="w-full">
-          <thead className="border-b border-white/10">
-            <tr className="text-left text-sm opacity-70">
+      <div className="border-2 border-white">
+        <table className="table w-full">
+          <thead>
+            <tr>
               <th className="px-4 py-3">
                 <input
                   type="checkbox"
@@ -428,19 +421,19 @@ export default function GameServersPage() {
                     selectedServers.size === paginatedServers.length
                   }
                   onChange={toggleAllSelection}
-                  className="rounded"
+                  className="checkbox"
                 />
               </th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Name</th>
-              <th className="px-4 py-3">Namespace</th>
-              <th className="px-4 py-3">Profile</th>
-              <th className="px-4 py-3">Players</th>
-              <th className="px-4 py-3">Created</th>
-              <th className="px-4 py-3">Actions</th>
+              <th className="px-4 py-3">STATUS</th>
+              <th className="px-4 py-3">NAME</th>
+              <th className="px-4 py-3">NAMESPACE</th>
+              <th className="px-4 py-3">PROFILE</th>
+              <th className="px-4 py-3">PLAYERS</th>
+              <th className="px-4 py-3">CREATED</th>
+              <th className="px-4 py-3">ACTIONS</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/10">
+          <tbody className="divide-y-2 divide-white">
             {isLoading ? (
               <tr>
                 <td colSpan={8} className="px-4 py-8">
@@ -451,11 +444,11 @@ export default function GameServersPage() {
               <tr>
                 <td
                   colSpan={8}
-                  className="px-4 py-8 text-center opacity-70"
+                  className="px-4 py-8 text-center mono-label text-white/50"
                 >
                   {servers?.length === 0
-                    ? "No game servers found"
-                    : "No servers match your filters"}
+                    ? "NO GAME SERVERS FOUND"
+                    : "NO SERVERS MATCH YOUR FILTERS"}
                 </td>
               </tr>
             ) : (
@@ -470,7 +463,7 @@ export default function GameServersPage() {
                         type="checkbox"
                         checked={selectedServers.has(serverId)}
                         onChange={() => toggleServerSelection(serverId)}
-                        className="rounded"
+                        className="checkbox"
                       />
                     </td>
                     <td className="px-4 py-3">
@@ -484,17 +477,17 @@ export default function GameServersPage() {
                         {server.metadata.name}
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-sm opacity-70">
+                    <td className="px-4 py-3 mono-label text-white/70">
                       {server.metadata.namespace}
                     </td>
-                    <td className="px-4 py-3 text-sm">
-                      <Badge variant="default">{server.spec.profile}</Badge>
+                    <td className="px-4 py-3">
+                      <Badge variant="neutral">{server.spec.profile}</Badge>
                     </td>
-                    <td className="px-4 py-3 text-sm">
+                    <td className="px-4 py-3 mono-label">
                       {server.status?.players ?? 0} /{" "}
                       {server.status?.playerCapacity ?? "-"}
                     </td>
-                    <td className="px-4 py-3 text-sm opacity-70">
+                    <td className="px-4 py-3 mono-label text-white/70">
                       {server.metadata.creationTimestamp
                         ? new Date(
                             server.metadata.creationTimestamp
@@ -507,7 +500,7 @@ export default function GameServersPage() {
                           href={`/gameservers/${server.metadata.namespace}/${server.metadata.name}?cp=${selectedControlPlaneId}`}
                         >
                           <Button variant="ghost" size="sm">
-                            View
+                            VIEW
                           </Button>
                         </Link>
                         <Button
@@ -521,7 +514,7 @@ export default function GameServersPage() {
                           }
                           disabled={deleteMutation.isPending}
                         >
-                          Delete
+                          DELETE
                         </Button>
                       </div>
                     </td>
@@ -542,10 +535,10 @@ export default function GameServersPage() {
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             disabled={page <= 1}
           >
-            Previous
+            PREVIOUS
           </Button>
-          <span className="text-sm opacity-70">
-            Page {page} of {totalPages}
+          <span className="mono-label text-white/70">
+            PAGE {page} OF {totalPages}
           </span>
           <Button
             variant="ghost"
@@ -553,7 +546,7 @@ export default function GameServersPage() {
             onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
             disabled={page >= totalPages}
           >
-            Next
+            NEXT
           </Button>
         </div>
       )}

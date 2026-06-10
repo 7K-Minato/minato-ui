@@ -4,16 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import ThemeToggle from "@/components/ui/ThemeToggle";
+import { ThemeToggle } from "7k-design-system/react";
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: "🏠" },
-  { name: "Game Servers", href: "/gameservers", icon: "🎮" },
-  { name: "Fleets", href: "/fleets", icon: "🚀" },
-  { name: "Profiles", href: "/profiles", icon: "📋" },
-  { name: "Control Planes", href: "/control-planes", icon: "🔌" },
-  { name: "API Keys", href: "/apikeys", icon: "🔑" },
-  { name: "Audit Logs", href: "/audit-logs", icon: "📜" },
+  { name: "Dashboard", href: "/", icon: "▪" },
+  { name: "Game Servers", href: "/gameservers", icon: "▫" },
+  { name: "Fleets", href: "/fleets", icon: "◆" },
+  { name: "Profiles", href: "/profiles", icon: "◇" },
+  { name: "Control Planes", href: "/control-planes", icon: "■" },
+  { name: "API Keys", href: "/apikeys", icon: "□" },
+  { name: "Audit Logs", href: "/audit-logs", icon: "▬" },
 ];
 
 export default function MobileNav() {
@@ -24,7 +24,7 @@ export default function MobileNav() {
     <div className="md:hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-4 left-4 z-50 rounded-lg border border-white/10 bg-black/50 p-2 backdrop-blur"
+        className="fixed top-4 left-4 z-50 border-2 border-white bg-black p-2"
         aria-label="Toggle menu"
       >
         <svg
@@ -54,17 +54,17 @@ export default function MobileNav() {
       {isOpen && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm"
+            className="fixed inset-0 z-40 bg-black/80"
             onClick={() => setIsOpen(false)}
           />
-          <div className="fixed inset-y-0 left-0 z-40 w-64 bg-black/90 border-r border-white/10">
-            <div className="flex h-16 items-center border-b border-white/10 px-6">
-              <Link href="/" className="text-xl font-bold">
-                Minato
+          <div className="fixed inset-y-0 left-0 z-40 w-64 bg-black border-r-2 border-white">
+            <div className="flex h-16 items-center border-b-2 border-white px-6">
+              <Link href="/" className="text-xl font-black tracking-tightest">
+                MINATO
               </Link>
             </div>
 
-            <nav className="flex-1 space-y-1 px-3 py-4">
+            <nav className="flex-1 space-y-0 px-0 py-4">
               {navigation.map((item) => {
                 const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
                 return (
@@ -72,30 +72,26 @@ export default function MobileNav() {
                     key={item.name}
                     href={item.href}
                     onClick={() => setIsOpen(false)}
-                    className={`flex items-center rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
-                      isActive
-                        ? "bg-white/10 text-white"
-                        : "text-white/70 hover:bg-white/5 hover:text-white"
-                    }`}
+                    className={`nav-item ${isActive ? "nav-item-accent" : ""} flex items-center px-4 py-3 text-sm font-medium`}
                   >
-                    <span className="mr-3">{item.icon}</span>
-                    {item.name}
+                    <span className="mr-3 font-mono text-lg">{item.icon}</span>
+                    <span className="mono-label">{item.name}</span>
                   </Link>
                 );
               })}
             </nav>
 
-            <div className="border-t border-white/10 p-4 space-y-2">
-              <div className="flex items-center justify-between rounded-lg px-3 py-2">
-                <span className="text-sm font-medium text-white/70">Theme</span>
+            <div className="border-t-2 border-white p-4 space-y-2">
+              <div className="flex items-center justify-between px-3 py-2">
+                <span className="mono-label text-white/70">THEME</span>
                 <ThemeToggle />
               </div>
               <button
                 onClick={() => signOut({ callbackUrl: "/login" })}
-                className="flex w-full items-center rounded-lg px-3 py-2 text-sm font-medium text-white/70 transition-colors hover:bg-white/5 hover:text-white"
+                className="flex w-full items-center px-4 py-3 text-sm font-medium text-white/70 hover:bg-white hover:text-black transition-colors"
               >
-                <span className="mr-3">🚪</span>
-                Sign Out
+                <span className="mr-3 font-mono text-lg">→</span>
+                <span className="mono-label">SIGN OUT</span>
               </button>
             </div>
           </div>

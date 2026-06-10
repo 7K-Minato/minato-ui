@@ -27,12 +27,17 @@ export default function CreateGameServerPage() {
   const [selectedCP, setSelectedCP] = useState("");
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     namespace: "default",
     profile: "",
     env: {} as Record<string, string>,
     storageSize: "",
+    idleTimeoutSeconds: "",
+    autoStart: false,
+    storageClass: "",
+    priorityClassName: "",
   });
 
   useEffect(() => {
@@ -85,6 +90,7 @@ export default function CreateGameServerPage() {
   async function handleSubmit() {
     try {
       setLoading(true);
+      setError("");
       const server = {
         apiVersion: "operator.minato.io/v1",
         kind: "GameServer",
@@ -98,7 +104,17 @@ export default function CreateGameServerPage() {
           ...(formData.storageSize && {
             storage: {
               size: formData.storageSize,
+              ...(formData.storageClass && { storageClass: formData.storageClass }),
             },
+          }),
+          ...(formData.idleTimeoutSeconds && {
+            lifecycle: {
+              idleTimeoutSeconds: parseInt(formData.idleTimeoutSeconds),
+              autoStart: formData.autoStart,
+            },
+          }),
+          ...(formData.priorityClassName && {
+            priorityClassName: formData.priorityClassName,
           }),
         },
       };
@@ -107,40 +123,39 @@ export default function CreateGameServerPage() {
       router.push(`/gameservers?cp=${selectedCP}`);
     } catch (error) {
       console.error("Failed to create server:", error);
-      alert("Failed to create game server");
+      setError("Failed to create game server");
       setLoading(false);
     }
   }
 
+  const steps = [
+    { num: 1, label: "BASIC INFO" },
+    { num: 2, label: "SELECT PROFILE" },
+    { num: 3, label: "CONFIGURATION" },
+  ];
+
   return (
     <div className="container mx-auto max-w-2xl p-8">
-      <h1 className="mb-8 text-3xl font-bold">Create Game Server</h1>
+      <h1 className="mb-8 text-4xl font-black tracking-tightest">CREATE GAME SERVER</h1>
 
-      {/* Progress Steps */}
-      <div className="mb-8 flex items-center gap-4">
-        {[1, 2, 3].map((s) => (
-          <div key={s} className="flex items-center gap-2">
-            <div
-              className={`flex h-8 w-8 items-center justify-center rounded-full ${
-                s === step
-                  ? "bg-white text-black"
-                  : s < step
-                  ? "bg-green-500"
-                  : "bg-white/10"
-              }`}
-            >
-              {s < step ? "✓" : s}
+      {/* Stepper */}
+      <div className="stepper mb-8">
+        {steps.map((s, i) => (
+          <>
+            <div key={s.num} className={`step ${s.num === step ? "step-active" : ""} ${s.num < step ? "step-completed" : ""}`}>
+              <span className="step-number">{s.num < step ? "✓" : s.num}</span>
+              <span className="step-label mono-label">{s.label}</span>
             </div>
-            {s < 3 && <div className="h-px w-8 bg-white/20" />}
-          </div>
+            {i < steps.length - 1 && <div className="step-line" />}
+          </>
         ))}
       </div>
 
       {/* Control Plane Selection */}
       <div className="mb-6">
-        <label className="block text-sm font-medium mb-2">Control Plane</label>
+        <label className="mono-label block mb-2">CONTROL PLANE</label>
         <select
-          className="w-full rounded border border-white/10 bg-transparent px-3 py-2"
+          className="w-full border-2 border-white bg-black px-3 py-2 mono-label"
           value={selectedCP}
           onChange={(e) => setSelectedCP(e.target.value)}
         >
@@ -150,56 +165,62 @@ export default function CreateGameServerPage() {
         </select>
       </div>
 
+      {error && (
+        <div className="glitch mb-6 border-2 border-white bg-black p-4">
+          <span className="text-white">{error}</span>
+        </div>
+      )}
+
       {step === 1 && (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Basic Information</h2>
+          <h2 className="mono-label">BASIC INFORMATION</h2>
           <div>
-            <label className="block text-sm font-medium mb-1">Server Name</label>
+            <label className="mono-label block mb-1">SERVER NAME</label>
             <Input
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(value) => setFormData({ ...formData, name: value })}
               placeholder="my-minecraft-server"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Namespace</label>
+            <label className="mono-label block mb-1">NAMESPACE</label>
             <Input
               value={formData.namespace}
-              onChange={(e) => setFormData({ ...formData, namespace: e.target.value })}
+              onChange={(value) => setFormData({ ...formData, namespace: value })}
               placeholder="default"
               required
             />
           </div>
-          <Button variant="primary" onClick={() => setStep(2)} disabled={!formData.name}>
-            Next
+          <Button variant="glow" onClick={() => setStep(2)} disabled={!formData.name}>
+            NEXT
           </Button>
         </div>
       )}
 
       {step === 2 && (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Select Profile</h2>
+          <h2 className="mono-label">SELECT PROFILE</h2>
           <div className="grid gap-4">
             {profiles.map((profile) => (
               <button
                 key={profile.metadata.name}
                 onClick={() => setFormData({ ...formData, profile: profile.metadata.name })}
-                className={`rounded-lg border p-4 text-left transition-colors ${
+                className={`border-2 p-4 text-left transition-colors ${
                   formData.profile === profile.metadata.name
-                    ? "border-white bg-white/10"
-                    : "border-white/10 hover:bg-white/5"
+                    ? "border-white bg-white text-black"
+                    : "border-white/30 hover:border-white hover:bg-white/5"
                 }`}
               >
                 <p className="font-medium">{profile.spec.displayName || profile.metadata.name}</p>
-                <p className="text-sm opacity-70">{profile.metadata.name}</p>
+                <p className="mono-label text-white/70">{profile.metadata.name}</p>
               </button>
             ))}
           </div>
           <div className="flex gap-4">
-            <Button variant="ghost" onClick={() => setStep(1)}>Back</Button>
-            <Button variant="primary" onClick={() => setStep(3)} disabled={!formData.profile}>
-              Next
+            <Button variant="ghost" onClick={() => setStep(1)}>BACK</Button>
+            <Button variant="glow" onClick={() => setStep(3)} disabled={!formData.profile}>
+              NEXT
             </Button>
           </div>
         </div>
@@ -207,21 +228,21 @@ export default function CreateGameServerPage() {
 
       {step === 3 && (
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Configuration</h2>
+          <h2 className="mono-label">CONFIGURATION</h2>
 
           {selectedProfile?.spec.environment &&
             selectedProfile.spec.environment.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-sm font-medium opacity-70">Environment Variables</h3>
+                <h3 className="mono-label">ENVIRONMENT VARIABLES</h3>
                 {selectedProfile.spec.environment.map((env) => (
                   <div key={env.key}>
-                    <label className="block text-sm">
+                    <label className="mono-label block">
                       {env.key}
-                      {env.required && <span className="text-red-400">*</span>}
+                      {env.required && <span className="text-danger">*</span>}
                     </label>
                     <Input
                       value={formData.env[env.key] || ""}
-                      onChange={(e) => handleEnvChange(env.key, e.target.value)}
+                      onChange={(value) => handleEnvChange(env.key, value)}
                       placeholder={env.default || `Enter ${env.key}`}
                       required={env.required}
                     />
@@ -231,38 +252,82 @@ export default function CreateGameServerPage() {
             )}
 
           <div>
-            <label className="block text-sm font-medium mb-1">Storage Size (optional)</label>
+            <label className="mono-label block mb-1">STORAGE SIZE (OPTIONAL)</label>
             <Input
               value={formData.storageSize}
-              onChange={(e) => setFormData({ ...formData, storageSize: e.target.value })}
+              onChange={(value) => setFormData({ ...formData, storageSize: value })}
               placeholder="20Gi"
             />
           </div>
 
-          <div className="rounded-lg bg-white/5 p-4">
-            <h3 className="mb-2 text-sm font-medium">Review</h3>
+          <div>
+            <label className="mono-label block mb-1">STORAGE CLASS (OPTIONAL)</label>
+            <Input
+              value={formData.storageClass}
+              onChange={(value) => setFormData({ ...formData, storageClass: value })}
+              placeholder="standard"
+            />
+          </div>
+
+          <div>
+            <label className="mono-label block mb-1">IDLE TIMEOUT SECONDS (OPTIONAL)</label>
+            <Input
+              type="number"
+              value={formData.idleTimeoutSeconds}
+              onChange={(value) => setFormData({ ...formData, idleTimeoutSeconds: value })}
+              placeholder="3600"
+            />
+          </div>
+
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="autoStart"
+              checked={formData.autoStart}
+              onChange={(e) => setFormData({ ...formData, autoStart: e.target.checked })}
+              className="checkbox checkbox-accent"
+            />
+            <label htmlFor="autoStart" className="mono-label">AUTO START ON PLAYER JOIN</label>
+          </div>
+
+          <div>
+            <label className="mono-label block mb-1">PRIORITY CLASS (OPTIONAL)</label>
+            <Input
+              value={formData.priorityClassName}
+              onChange={(value) => setFormData({ ...formData, priorityClassName: value })}
+              placeholder="high-priority"
+            />
+          </div>
+
+          <div className="border-2 border-white bg-black p-4">
+            <h3 className="mb-2 mono-label">REVIEW</h3>
             <div className="space-y-1 text-sm">
               <p>
-                <span className="opacity-70">Name: </span>{formData.name}
+                <span className="mono-label text-white/70">NAME: </span>{formData.name}
               </p>
               <p>
-                <span className="opacity-70">Namespace: </span>{formData.namespace}
+                <span className="mono-label text-white/70">NAMESPACE: </span>{formData.namespace}
               </p>
               <p>
-                <span className="opacity-70">Profile: </span>{formData.profile}
+                <span className="mono-label text-white/70">PROFILE: </span>{formData.profile}
               </p>
               {formData.storageSize && (
                 <p>
-                  <span className="opacity-70">Storage: </span>{formData.storageSize}
+                  <span className="mono-label text-white/70">STORAGE: </span>{formData.storageSize}
+                </p>
+              )}
+              {formData.storageClass && (
+                <p>
+                  <span className="mono-label text-white/70">STORAGE CLASS: </span>{formData.storageClass}
                 </p>
               )}
             </div>
           </div>
 
           <div className="flex gap-4">
-            <Button variant="ghost" onClick={() => setStep(2)}>Back</Button>
-            <Button variant="primary" onClick={handleSubmit} disabled={loading}>
-              {loading ? "Creating..." : "Create Server"}
+            <Button variant="ghost" onClick={() => setStep(2)}>BACK</Button>
+            <Button variant="glow" onClick={handleSubmit} disabled={loading}>
+              {loading ? "CREATING..." : "CREATE SERVER"}
             </Button>
           </div>
         </div>

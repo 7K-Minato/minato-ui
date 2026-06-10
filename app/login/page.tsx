@@ -44,24 +44,26 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <div className="w-full max-w-md space-y-8 p-8">
+    <div className="flex min-h-screen items-center justify-center scanline">
+      <div className="w-full max-w-md space-y-8 p-8 border-2 border-white bg-black">
         <div className="text-center">
-          <h1 className="text-3xl font-bold">Minato Control Plane</h1>
-          <p className="mt-2 text-sm opacity-70">Sign in to manage your game servers</p>
+          <h1 className="text-4xl font-black tracking-tightest" style={{ fontFamily: "var(--font-geist-mono)" }}>
+            MINATO
+          </h1>
+          <p className="mt-2 mono-label text-white/70">SIGN IN TO MANAGE YOUR GAME SERVERS</p>
         </div>
 
         {error && (
-          <div className="rounded-lg border border-red-500/50 bg-red-500/10 p-4 text-sm text-red-400">
-            {error}
+          <div className="glitch border-2 border-white bg-black p-4 text-sm">
+            <span className="text-white">{error}</span>
           </div>
         )}
 
         <form onSubmit={handleBasicAuth} className="mt-8 space-y-6">
           <div className="space-y-4">
             <div>
-              <label htmlFor="controlPlaneUrl" className="block text-sm font-medium">
-                Control Plane URL
+              <label htmlFor="controlPlaneUrl" className="mono-label block mb-1">
+                CONTROL PLANE URL
               </label>
               <Input
                 id="controlPlaneUrl"
@@ -70,14 +72,14 @@ export default function LoginPage() {
                 placeholder="http://localhost:8080"
                 required
                 value={controlPlaneUrl}
-                onChange={(e) => setControlPlaneUrl(e.target.value)}
-                className="mt-1"
+                onChange={setControlPlaneUrl}
+                className="w-full"
               />
             </div>
 
             <div>
-              <label htmlFor="username" className="block text-sm font-medium">
-                Username
+              <label htmlFor="username" className="mono-label block mb-1">
+                USERNAME
               </label>
               <Input
                 id="username"
@@ -85,14 +87,14 @@ export default function LoginPage() {
                 type="text"
                 required
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className="mt-1"
+                onChange={setUsername}
+                className="w-full"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium">
-                Password
+              <label htmlFor="password" className="mono-label block mb-1">
+                PASSWORD
               </label>
               <Input
                 id="password"
@@ -100,19 +102,19 @@ export default function LoginPage() {
                 type="password"
                 required
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1"
+                onChange={setPassword}
+                className="w-full"
               />
             </div>
           </div>
 
           <Button
             type="submit"
-            variant="primary"
+            variant="glow"
             className="w-full"
             disabled={loading}
           >
-            {loading ? "Signing in..." : "Sign In with Basic Auth"}
+            {loading ? "SIGNING IN..." : "SIGN IN WITH BASIC AUTH"}
           </Button>
         </form>
 
@@ -120,10 +122,10 @@ export default function LoginPage() {
           <>
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-white/10"></div>
+                <div className="w-full border-t-2 border-white/20"></div>
               </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="bg-[#0a0a0d] px-2 opacity-70">Or</span>
+              <div className="relative flex justify-center">
+                <span className="bg-black px-2 mono-label text-white/50">OR</span>
               </div>
             </div>
 
@@ -133,7 +135,7 @@ export default function LoginPage() {
               onClick={handleOIDC}
               disabled={loading}
             >
-              Sign In with SSO
+              SIGN IN WITH SSO
             </Button>
           </>
         )}
