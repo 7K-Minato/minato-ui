@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: harbor.7kgroup.org
-  IMAGE_NAME: minato/minato-ui
+  IMAGE_NAME: 7kminato/minato-ui
   HELM_REGISTRY: oci://harbor.7kgroup.org/7kminato
 
 jobs:
