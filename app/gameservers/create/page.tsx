@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button, Input } from "7k-design-system/react";
 import { gameServerAPI } from "@/lib/gameserver-api";
@@ -44,12 +44,6 @@ export default function CreateGameServerPage() {
     loadControlPlanes();
   }, []);
 
-  useEffect(() => {
-    if (selectedCP) {
-      loadProfiles();
-    }
-  }, [selectedCP]);
-
   async function loadControlPlanes() {
     try {
       const cps = await controlPlaneAPI.list();
@@ -62,7 +56,7 @@ export default function CreateGameServerPage() {
     }
   }
 
-  async function loadProfiles() {
+  const loadProfiles = useCallback(async () => {
     try {
       const res = await fetch(`/api/proxy/api/v1/profiles`, {
         headers: {
@@ -76,7 +70,13 @@ export default function CreateGameServerPage() {
     } catch (error) {
       console.error("Failed to load profiles:", error);
     }
-  }
+  }, [selectedCP]);
+
+  useEffect(() => {
+    if (selectedCP) {
+      loadProfiles();
+    }
+  }, [selectedCP, loadProfiles]);
 
   function handleEnvChange(key: string, value: string) {
     setFormData({

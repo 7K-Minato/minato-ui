@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Badge, Button } from "7k-design-system/react";
 import { controlPlaneAPI } from "@/lib/control-plane-api";
 import Skeleton from "@/components/ui/Skeleton";
@@ -35,10 +35,6 @@ export default function AuditLogsPage() {
     loadControlPlanes();
   }, []);
 
-  useEffect(() => {
-    if (selectedCP) loadEvents();
-  }, [selectedCP]);
-
   async function loadControlPlanes() {
     try {
       const cps = await controlPlaneAPI.list();
@@ -49,7 +45,7 @@ export default function AuditLogsPage() {
     }
   }
 
-  async function loadEvents() {
+  const loadEvents = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -75,7 +71,11 @@ export default function AuditLogsPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [selectedCP, filter]);
+
+  useEffect(() => {
+    if (selectedCP) loadEvents();
+  }, [selectedCP, loadEvents]);
 
   const filteredEvents = events.filter((event) => {
     if (filter.actor && !event.actor?.toLowerCase().includes(filter.actor.toLowerCase())) return false;

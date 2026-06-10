@@ -21,10 +21,6 @@ export default function FleetsPage() {
   }, []);
 
   useEffect(() => {
-    if (selectedCP) loadFleets();
-  }, [selectedCP]);
-
-  useEffect(() => {
     if (!search) {
       setFilteredFleets(fleets);
     } else {
@@ -65,6 +61,10 @@ export default function FleetsPage() {
       setLoading(false);
     }
   }, [selectedCP]);
+
+  useEffect(() => {
+    if (selectedCP) loadFleets();
+  }, [selectedCP, loadFleets]);
 
   async function handleScale(namespace: string, name: string, replicas: number) {
     try {

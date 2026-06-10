@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Button, Badge } from "7k-design-system/react";
@@ -63,15 +63,7 @@ export default function GameServerDetailPage({
     });
   }, [params]);
 
-  useEffect(() => {
-    if (!namespace || !name || !controlPlaneId) return;
-
-    if (activeTab === "snapshots") loadSnapshots();
-    if (activeTab === "players") loadPlayers();
-    if (activeTab === "console") loadConsoleLogs();
-  }, [activeTab, namespace, name, controlPlaneId]);
-
-  async function loadSnapshots() {
+  const loadSnapshots = useCallback(async () => {
     try {
       const res = await fetch(
         `/api/proxy/api/v1/gameservers/${namespace}/${name}/snapshots`,
@@ -84,9 +76,9 @@ export default function GameServerDetailPage({
     } catch {
       addToast("Failed to load snapshots", "error");
     }
-  }
+  }, [namespace, name, controlPlaneId, addToast]);
 
-  async function loadPlayers() {
+  const loadPlayers = useCallback(async () => {
     try {
       const res = await fetch(
         `/api/proxy/api/v1/gameservers/${namespace}/${name}/players`,
@@ -99,9 +91,9 @@ export default function GameServerDetailPage({
     } catch {
       addToast("Failed to load players", "error");
     }
-  }
+  }, [namespace, name, controlPlaneId, addToast]);
 
-  async function loadConsoleLogs() {
+  const loadConsoleLogs = useCallback(async () => {
     try {
       setConsoleLoading(true);
       const res = await fetch(
@@ -117,7 +109,15 @@ export default function GameServerDetailPage({
     } finally {
       setConsoleLoading(false);
     }
-  }
+  }, [namespace, name, controlPlaneId, addToast]);
+
+  useEffect(() => {
+    if (!namespace || !name || !controlPlaneId) return;
+
+    if (activeTab === "snapshots") loadSnapshots();
+    if (activeTab === "players") loadPlayers();
+    if (activeTab === "console") loadConsoleLogs();
+  }, [activeTab, namespace, name, controlPlaneId, loadSnapshots, loadPlayers, loadConsoleLogs]);
 
   async function handleCreateSnapshot() {
     try {

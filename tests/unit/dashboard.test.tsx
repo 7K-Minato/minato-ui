@@ -19,7 +19,7 @@ describe("Dashboard", () => {
     render(<DashboardPage />);
     
     await waitFor(() => {
-      expect(screen.getByText("Dashboard")).toBeInTheDocument();
+      expect(screen.getByText("DASHBOARD")).toBeInTheDocument();
     });
   });
 
@@ -32,7 +32,7 @@ describe("Dashboard", () => {
     render(<DashboardPage />);
     
     await waitFor(() => {
-      expect(screen.getByText("+ Add Control Plane")).toBeInTheDocument();
+      expect(screen.getByText("+ ADD CONTROL PLANE")).toBeInTheDocument();
     });
   });
 

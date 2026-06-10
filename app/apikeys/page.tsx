@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button, Badge, Input } from "7k-design-system/react";
 import { controlPlaneAPI } from "@/lib/control-plane-api";
 import { useToastStore } from "@/components/ui/Toast";
@@ -34,10 +34,6 @@ export default function APIKeysPage() {
     loadControlPlanes();
   }, []);
 
-  useEffect(() => {
-    if (selectedCP) loadAPIKeys();
-  }, [selectedCP]);
-
   async function loadControlPlanes() {
     try {
       const cps = await controlPlaneAPI.list();
@@ -48,7 +44,7 @@ export default function APIKeysPage() {
     }
   }
 
-  async function loadAPIKeys() {
+  const loadAPIKeys = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch(`/api/proxy/api/v1/apikeys`, {
@@ -63,7 +59,11 @@ export default function APIKeysPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [selectedCP]);
+
+  useEffect(() => {
+    if (selectedCP) loadAPIKeys();
+  }, [selectedCP, loadAPIKeys]);
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();

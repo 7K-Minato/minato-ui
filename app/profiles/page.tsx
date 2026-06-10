@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Badge } from "7k-design-system/react";
 import { controlPlaneAPI } from "@/lib/control-plane-api";
 import Skeleton from "@/components/ui/Skeleton";
@@ -62,10 +62,6 @@ export default function ProfilesPage() {
     loadControlPlanes();
   }, []);
 
-  useEffect(() => {
-    if (selectedCP) loadProfiles();
-  }, [selectedCP]);
-
   async function loadControlPlanes() {
     try {
       const cps = await controlPlaneAPI.list();
@@ -76,7 +72,7 @@ export default function ProfilesPage() {
     }
   }
 
-  async function loadProfiles() {
+  const loadProfiles = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch(`/api/proxy/api/v1/profiles`, {
@@ -91,7 +87,11 @@ export default function ProfilesPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [selectedCP]);
+
+  useEffect(() => {
+    if (selectedCP) loadProfiles();
+  }, [selectedCP, loadProfiles]);
 
   if (selectedProfile) {
     return (
