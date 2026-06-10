@@ -6,8 +6,8 @@ test.describe("Game Servers", () => {
   });
 
   test("loads game servers page", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: "Game Servers" })).toBeVisible();
-    await expect(page.getByText("Manage your game servers across clusters")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "GAME SERVERS" })).toBeVisible();
+    await expect(page.getByText("MANAGE YOUR GAME SERVERS ACROSS CLUSTERS")).toBeVisible();
   });
 
   test("has create server button", async ({ page }) => {
@@ -27,9 +27,9 @@ test.describe("Game Servers", () => {
   });
 
   test("table headers are correct", async ({ page }) => {
-    const headers = ["Status", "Name", "Namespace", "Profile", "Players", "Created", "Actions"];
+    const headers = ["STATUS", "NAME", "NAMESPACE", "PROFILE", "PLAYERS", "CREATED", "ACTIONS"];
     for (const header of headers) {
-      await expect(page.getByRole("cell", { name: header }).first()).toBeVisible();
+      await expect(page.getByRole("columnheader", { name: header }).first()).toBeVisible();
     }
   });
 });
@@ -39,16 +39,16 @@ test.describe("Game Server Detail", () => {
     // This test assumes there's at least one server
     // In a real test environment, we'd create a server first
     await page.goto("/gameservers");
-    
-    // Try to click on the first server link
-    const firstServer = page.getByRole("link").filter({ hasText: /^(?!.*View).*$/ }).first();
+
+    // Try to click on the first server link in the table body
+    const firstServer = page.locator("table tbody tr td a").first();
     if (await firstServer.isVisible().catch(() => false)) {
       await firstServer.click();
-      await expect(page.getByRole("tab", { name: "overview" })).toBeVisible();
-      await expect(page.getByRole("tab", { name: "actions" })).toBeVisible();
-      await expect(page.getByRole("tab", { name: "snapshots" })).toBeVisible();
-      await expect(page.getByRole("tab", { name: "players" })).toBeVisible();
-      await expect(page.getByRole("tab", { name: "console" })).toBeVisible();
+      await expect(page.getByRole("tab", { name: "OVERVIEW" })).toBeVisible();
+      await expect(page.getByRole("tab", { name: "ACTIONS" })).toBeVisible();
+      await expect(page.getByRole("tab", { name: "SNAPSHOTS" })).toBeVisible();
+      await expect(page.getByRole("tab", { name: "PLAYERS" })).toBeVisible();
+      await expect(page.getByRole("tab", { name: "CONSOLE" })).toBeVisible();
     }
   });
 });

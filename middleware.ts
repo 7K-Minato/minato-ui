@@ -3,8 +3,12 @@ import type { NextRequest } from "next/server";
 import { auth } from "@/lib/auth";
 
 export async function middleware(request: NextRequest) {
-  const session = await auth();
   const { pathname } = request.nextUrl;
+
+  // Bypass auth for E2E tests
+  if (process.env.E2E_TEST === "true") {
+    return NextResponse.next();
+  }
 
   // Public routes
   if (
@@ -15,10 +19,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Bypass auth for E2E tests
-  if (process.env.E2E_TEST === "true") {
-    return NextResponse.next();
-  }
+  const session = await auth();
 
   // Protected routes
   if (!session) {

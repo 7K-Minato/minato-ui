@@ -9,6 +9,28 @@ on:
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: minatoui
+          POSTGRES_PASSWORD: minatoui
+          POSTGRES_DB: minatoui
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://minatoui:minatoui@localhost:5432/minatoui?schema=public
+      AUTH_SECRET: test-secret-for-e2e
+      NEXTAUTH_SECRET: test-secret-for-e2e
+      NEXTAUTH_URL: http://localhost:3000
+      E2E_TEST: true
+
     steps:
       - uses: actions/checkout@v4
 
@@ -24,13 +46,35 @@ jobs:
       - name: Generate Prisma client
         run: npm run db:generate
 
+      - name: Run database migrations
+        run: npx prisma migrate deploy
+
+      - name: Seed test data
+        run: |
+          node -e "
+            const { PrismaClient } = require('@prisma/client');
+            const prisma = new PrismaClient();
+            prisma.controlPlane.create({
+              data: {
+                name: 'E2E Test CP',
+                url: 'http://localhost:8080',
+                authType: 'none',
+                isDefault: true,
+              },
+            }).then(() => {
+              console.log('Seeded control plane');
+              return prisma.\$disconnect();
+            }).catch(e => {
+              console.error(e);
+              process.exit(1);
+            });
+          "
+
       - name: Install Playwright browsers
         run: npx playwright install --with-deps
 
       - name: Run E2E tests
         run: npm run test:e2e
-        env:
-          E2E_TEST: true
 
       - name: Upload test results
         uses: actions/upload-artifact@v4

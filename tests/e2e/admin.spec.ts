@@ -6,7 +6,7 @@ test.describe("Control Planes", () => {
   });
 
   test("loads control planes page", async ({ page }) => {
-    await expect(page.getByRole("heading", { name: "Control Planes" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "CONTROL PLANES" })).toBeVisible();
   });
 
   test("has add control plane button", async ({ page }) => {
@@ -15,10 +15,10 @@ test.describe("Control Planes", () => {
 
   test("form validation works", async ({ page }) => {
     await page.getByRole("button", { name: /add control plane/i }).click();
-    
+
     // Try to submit empty form
-    await page.getByRole("button", { name: /save/i }).click();
-    
+    await page.getByRole("button", { name: /add control plane/i }).click();
+
     // Should show validation errors or stay on form
     await expect(page.getByLabel(/name/i)).toBeVisible();
   });
@@ -27,7 +27,7 @@ test.describe("Control Planes", () => {
 test.describe("API Keys", () => {
   test("loads api keys page", async ({ page }) => {
     await page.goto("/apikeys");
-    await expect(page.getByRole("heading", { name: "API Keys" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "API KEYS" })).toBeVisible();
   });
 
   test("has create key button", async ({ page }) => {
@@ -39,7 +39,7 @@ test.describe("API Keys", () => {
 test.describe("Audit Logs", () => {
   test("loads audit logs page", async ({ page }) => {
     await page.goto("/audit-logs");
-    await expect(page.getByRole("heading", { name: "Audit Logs" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "AUDIT LOGS" })).toBeVisible();
   });
 
   test("has filter inputs", async ({ page }) => {

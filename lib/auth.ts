@@ -64,9 +64,9 @@ if (oidcConfig.issuer && oidcConfig.clientId) {
   console.log("OIDC configured but generic OIDC provider not yet implemented");
 }
 
-export const {
+const {
   handlers: { GET, POST },
-  auth,
+  auth: nextAuth,
   signIn,
   signOut,
 } = NextAuth({
@@ -107,3 +107,23 @@ export const {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
 });
+
+export { GET, POST, signIn, signOut };
+
+export async function auth() {
+  if (process.env.E2E_TEST === "true") {
+    return {
+      user: {
+        id: "e2e-user",
+        name: "E2E User",
+        email: "e2e@example.com",
+        role: "admin",
+        controlPlaneUrl: "http://localhost:8080",
+        authMode: "basic",
+      },
+      accessToken: "e2e-test-token",
+      expires: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+    };
+  }
+  return nextAuth();
+}
