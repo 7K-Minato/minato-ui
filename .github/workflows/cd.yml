@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-
+  workflow_dispatch:
 env:
   REGISTRY: harbor.7kgroup.org
   IMAGE_NAME: 7kminato/minato-ui
@@ -94,7 +94,6 @@ jobs:
 
       - name: Package and push Helm chart
         run: |
-          VERSION=${{ needs.release-please.outputs.tag_name }}
-          VERSION=${VERSION#v}
+          VERSION=${{ needs.release-please.outputs.tag_name#v }}
           helm package deploy/helm/minato-ui --version $VERSION --app-version $VERSION
           helm push minato-ui-$VERSION.tgz ${{ env.HELM_REGISTRY }}
