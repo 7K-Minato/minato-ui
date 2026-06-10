@@ -46,8 +46,8 @@ jobs:
       - name: Generate Prisma client
         run: npm run db:generate
 
-      - name: Run database migrations
-        run: npx prisma migrate deploy
+      - name: Push database schema
+        run: npx prisma db push
 
       - name: Seed test data
         run: |
