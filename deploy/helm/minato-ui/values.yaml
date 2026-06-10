@@ -5,7 +5,7 @@
 replicaCount: 2
 
 image:
-  repository: harbor.7kgroup.com/minato/minato-ui
+  repository: harbor.7kgroup.org/7kminato/minato-ui
   pullPolicy: IfNotPresent
   tag: ""
 
