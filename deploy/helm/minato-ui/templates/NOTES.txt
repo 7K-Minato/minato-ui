@@ -1,0 +1,50 @@
+Thank you for installing {{ .Chart.Name }}.
+
+Your release is named {{ .Release.Name }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ .Release.Name }}
+  $ helm get all {{ .Release.Name }}
+
+{{- if .Values.cnpg.enabled }}
+
+Database:
+---------
+A CloudNativePG cluster has been created for the application database.
+Wait for the cluster to be ready:
+
+  $ kubectl get cluster {{ include "minato-ui.fullname" . }}
+
+The database credentials are stored in the secret:
+
+  $ kubectl get secret {{ include "minato-ui.fullname" . }}-db-credentials -o jsonpath='{.data.password}' | base64 -d
+{{- end }}
+
+{{- if .Values.ingress.enabled }}
+
+Access:
+-------
+The application should be accessible at:
+
+{{- range .Values.ingress.hosts }}
+  - http{{ if $.Values.ingress.tls }}s{{ end }}://{{ .host }}
+{{- end }}
+{{- else }}
+
+Access:
+-------
+Get the application URL by running:
+
+  $ kubectl port-forward svc/{{ include "minato-ui.fullname" . }} 3000:3000
+  $ open http://localhost:3000
+{{- end }}
+
+Authentication:
+---------------
+{{- if .Values.app.auth.oidc.enabled }}
+OIDC authentication is configured with issuer: {{ .Values.app.auth.oidc.issuer }}
+{{- end }}
+{{- if .Values.app.auth.basic.enabled }}
+Basic authentication is enabled.
+{{- end }}

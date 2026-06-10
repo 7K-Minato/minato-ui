@@ -1,0 +1,32 @@
+{{- if .Values.cnpg.enabled }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ include "minato-ui.fullname" . }}
+  labels:
+    {{- include "minato-ui.labels" . | nindent 4 }}
+spec:
+  instances: {{ .Values.cnpg.instances }}
+  storage:
+    size: {{ .Values.cnpg.storage.size }}
+    {{- if .Values.cnpg.storage.storageClass }}
+    storageClass: {{ .Values.cnpg.storage.storageClass }}
+    {{- end }}
+  postgresql:
+    parameters:
+      max_connections: "200"
+  resources:
+    {{- toYaml .Values.cnpg.resources | nindent 4 }}
+  bootstrap:
+    initdb:
+      database: minatoui
+      owner: minatoui
+      secret:
+        name: {{ include "minato-ui.fullname" . }}-db-credentials
+  {{- if .Values.cnpg.instances > 1 }}
+  affinity:
+    enablePodAntiAffinity: true
+  failoverDelay: 60
+  switchoverDelay: 400
+  {{- end }}
+{{- end }}
