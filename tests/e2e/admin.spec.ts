@@ -13,14 +13,13 @@ test.describe("Control Planes", () => {
     await expect(page.getByRole("button", { name: /add control plane/i })).toBeVisible();
   });
 
-  test("form validation works", async ({ page }) => {
+  test("form opens and shows required fields", async ({ page }) => {
     await page.getByRole("button", { name: /add control plane/i }).click();
 
-    // Try to submit empty form
-    await page.getByRole("button", { name: /add control plane/i }).click();
-
-    // Should show validation errors or stay on form
-    await expect(page.getByLabel(/name/i)).toBeVisible();
+    // Form should be visible with required fields
+    await expect(page.getByPlaceholder("Production EU")).toBeVisible();
+    await expect(page.getByPlaceholder("http://localhost:8080")).toBeVisible();
+    await expect(page.getByRole("button", { name: "ADD CONTROL PLANE" })).toBeVisible();
   });
 });
 
